@@ -32,114 +32,128 @@
 class Park
 {
 
-    ///////////////////////////////////
-    // Static Methods and Properties //
-    ///////////////////////////////////
+	///////////////////////////////////
+	// Static Methods and Properties //
+	///////////////////////////////////
 
-    /**
-     * our connection to the database
-     */
+	/**
+	 * our connection to the database
+	 */
 
-    public static $connection = null;
+	public static $connection = null;
 
 
-    /**
-     * establish a database connection if we do not have one
-     */
-    public static function dbConnect() {
+	/**
+	 * establish a database connection if we do not have one
+	 */
+	public static function dbConnect() {
 
-        if (! is_null(self::$connection)) {
-            return;
-        }
-       self::$connection = require 'db_connect.php';
-    }
+		if (! is_null(self::$connection)) {
+			return;
+		}
+	   self::$connection = require 'db_connect.php';
+	}
 
-    /**
-     * returns the number of records in the database
-     */
-    public static function count() {
-        // TODO: call db_connect to ensure we have a database connection
-        self::dbConnect();
-        // TODO: use the $connection static property to query the database for the
-        //       number of existing park records
-        $statement = self::$connection->query('SELECT count(*) FROM national_parks');
-        $count = $statement->fetchColumn();
-        return $count;
-    }
+	/**
+	 * returns the number of records in the database
+	 */
+	public static function count() {
+		// TODO: call db_connect to ensure we have a database connection
+		self::dbConnect();
+		// TODO: use the $connection static property to query the database for the
+		//       number of existing park records
+		$statement = self::$connection->query('SELECT count(*) FROM national_parks');
+		$count = $statement->fetchColumn();
+		return $count;
+	}
 
-    /**
-     * returns all the records
-     */
-    public static function all() {
-        // TODO: call dbConnect to ensure we have a database connection
+	/**
+	 * returns all the records
+	 */
+	public static function all() {
+		// TODO: call dbConnect to ensure we have a database connection
 
-        self::dbConnect();
-        // TODO: use the $connection static property to query the database for all the
-        //       records in the parks table
+		self::dbConnect();
+		// TODO: use the $connection static property to query the database for all the
+		//       records in the parks table
 
-        $parks = self::$connection->query('SELECT * FROM national_parks');
-        // TODO: iterate over the results array and transform each associative
-        //       array into a Park object
+		$parks = self::$connection->query('SELECT * FROM national_parks');
+		// TODO: iterate over the results array and transform each associative
+		//       array into a Park object
 
-        $objectArray = [];
+		$objectArray = [];
 
-        foreach ($parks as $park) {
+		foreach ($parks as $park) {
 
-            $singlePark = new Park();
+			$singlePark = new Park();
 
-            $singlePark->id = $park['id'];
-            $singlePark->name = $park['name'];
-            $singlePark->location = $park['location'];
-            $singlePark->dateEstablished = $park['date_established'];
-            $singlePark->areaInAcres = $park['area_in_acres'];
-            $singlePark->description = $park['description'];
+			$singlePark->id = $park['id'];
+			$singlePark->name = $park['name'];
+			$singlePark->location = $park['location'];
+			$singlePark->dateEstablished = $park['date_established'];
+			$singlePark->areaInAcres = $park['area_in_acres'];
+			$singlePark->description = $park['description'];
 
-            array_push($objectArray, $singlePark);
-            
-        }
+			array_push($objectArray, $singlePark);
+			
+		}
 
-        // TODO: return an array of Park objects
-        return $objectArray;
-       
-    }
+		// TODO: return an array of Park objects
+		return $objectArray;
+	   
+	}
 
-    /**
-     * returns $resultsPerPage number of results for the given page number
-     */
-    public static function paginate($pageNo, $resultsPerPage = 4) {
-        // TODO: call dbConnect to ensure we have a database connection
-        // TODO: calculate the limit and offset needed based on the passed
-        //       values
-        // TODO: use the $connection static property to query the database with the
+	/**
+	 * returns $resultsPerPage number of results for the given page number
+	 */
+	public static function paginate($page, $resultsPerPage = 4) {
+		// TODO: call dbConnect to ensure we have a database connection
+		self::dbConnect();
 
-        //       calculated limit and offset
-        // TODO: return an array of the found Park objects
-    }
+		// TODO: calculate the limit and offset needed based on the passed values
 
-    /////////////////////////////////////
-    // Instance Methods and Properties //
-    /////////////////////////////////////
+		$offset = ($page - 1) * $resultsPerPage;
 
-    /**
-     * properties that represent columns from the database
-     */
-    public $id;
-    public $name;
-    public $location;
-    public $dateEstablished;
-    public $areaInAcres;
-    public $description;
+		// TODO: use the $connection static property to query the database with the calculated limit and offset
 
-    /**
-     * inserts a record into the database
-     */
-    public function insert() {
-        // TODO: call dbConnect to ensure we have a database connection
-        // TODO: use the $connection static property to create a perpared statement for
-        //       inserting a record into the parks table
-        // TODO: use the $this keyword to bind the values from this object to
-        //       the prepared statement
-        // TODO: excute the statement and set the $id property of this object to
-        //       the newly created id
-    }
+		$statement = self::$connection->prepare("SELECT * FROM national_parks LIMIT :items_per_page OFFSET :offset");
+
+		// TODO: return an array of the found Park objects
+		$statement->bindValue('items_per_page', $resultsPerPage, PDO::PARAM_INT);
+
+		$statement->bindValue('offset', $offset, PDO::PARAM_INT);
+
+		$statement->execute();
+
+		return $parks = $statement->fetchAll(PDO::FETCH_ASSOC);
+
+		var_dump($parks);
+	}
+
+	/////////////////////////////////////
+	// Instance Methods and Properties //
+	/////////////////////////////////////
+
+	/**
+	 * properties that represent columns from the database
+	 */
+	public $id;
+	public $name;
+	public $location;
+	public $dateEstablished;
+	public $areaInAcres;
+	public $description;
+
+	/**
+	 * inserts a record into the database
+	 */
+	public function insert() {
+		// TODO: call dbConnect to ensure we have a database connection
+		// TODO: use the $connection static property to create a perpared statement for
+		//       inserting a record into the parks table
+		// TODO: use the $this keyword to bind the values from this object to
+		//       the prepared statement
+		// TODO: excute the statement and set the $id property of this object to
+		//       the newly created id
+	}
 }
