@@ -2,7 +2,7 @@
 
 // connect to db, present db connection as $connection variable
 
-require __DIR__ . '/db_connect.php';
+require __DIR__ . '/../db_connect.php';
 require __DIR__ . '/../Input.php';
 
 
