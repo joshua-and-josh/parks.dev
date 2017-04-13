@@ -106,7 +106,7 @@ extract(pageController($connection));
 	</head>
 	<body>
 		<main>
-			<h1>National Parks</h1>
+			<h1>Welcome to (some of) the National Parks</h1>
 			<table class="table table-bordered">
 				<thead class="thead-inverse">
 				<tr>
