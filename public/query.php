@@ -2,39 +2,37 @@
 
 // connect to db, present db connection as $connection variable
 
-// Hello
-
-require __DIR__ . '/../db_connect.php';
+// 
+require __DIR__ . '/../Park.php';
+// require __DIR__ . '/../db_connect.php';
 require __DIR__ . '/../Input.php';
 
 
 function getLastPage($connection, $items_per_page) {
 
-	$statement = $connection->query('SELECT count(*) FROM national_parks');
-
-	$count = $statement->fetch()[0];
+	$count = Park::count();
 
 	$lastPage = ceil($count/$items_per_page);
 
 	return $lastPage;
 }
 
-function getPaginatedParks($connection, $page, $items_per_page) {
+// function getPaginatedParks($page, $items_per_page) {
 
-	$offset = ($page - 1) * $items_per_page;
+// 	// $offset = ($page - 1) * $items_per_page;
 
-	$statement = $connection->prepare("SELECT * FROM national_parks LIMIT  :items_per_page OFFSET :offset");
+// 	// $statement = $connection->prepare("SELECT * FROM national_parks LIMIT  :items_per_page OFFSET :offset");
 
-	$statement->bindValue('items_per_page', $items_per_page, PDO::PARAM_INT);
+// 	// $statement->bindValue('items_per_page', $items_per_page, PDO::PARAM_INT);
 
-	$statement->bindValue('offset', $offset, PDO::PARAM_INT);
+// 	// $statement->bindValue('offset', $offset, PDO::PARAM_INT);
 
-	$statement->execute();
+// 	// $statement->execute();
 
-	return $parks = $statement->fetchAll(PDO::FETCH_ASSOC);
+// 	// return $parks = $statement->fetchAll(PDO::FETCH_ASSOC);
 
 
-}
+// }
 
 function handleOutOfRangeRequests ($page, $lastPage) {
 
@@ -78,13 +76,13 @@ function pageController($connection) {
 
 	}
 
-	$page = Input::get('page',1);
+	$page = Input::get('page', 1);
 
 	$lastPage = getLastPage($connection, $items_per_page);
 
 	handleOutOfRangeRequests($page, $lastPage);
 
-	$data['parks'] = getPaginatedParks($connection, $page, $items_per_page);
+	$data['parks'] = Park::paginate($page);
 	$data['page'] = $page;
 	$data['lastPage'] = $lastPage;
 
@@ -92,7 +90,7 @@ function pageController($connection) {
 
 }
 
-extract(pageController($connection));
+extract(pageController(Park::dbConnect())) ;
 
 ?>
 

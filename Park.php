@@ -63,7 +63,7 @@ class Park
 		// TODO: use the $connection static property to query the database for the
 		//       number of existing park records
 		$statement = self::$connection->query('SELECT count(*) FROM national_parks');
-		$count = $statement->fetchColumn();
+		$count = $statement->fetch()[0];
 		return $count;
 	}
 
@@ -127,7 +127,6 @@ class Park
 
 		return $parks = $statement->fetchAll(PDO::FETCH_ASSOC);
 
-		var_dump($parks);
 	}
 
 	/////////////////////////////////////
