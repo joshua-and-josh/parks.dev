@@ -149,11 +149,30 @@ class Park
 	 */
 	public function insert() {
 		// TODO: call dbConnect to ensure we have a database connection
+		self::dbConnect();
+
 		// TODO: use the $connection static property to create a perpared statement for
 		//       inserting a record into the parks table
-		// TODO: use the $this keyword to bind the values from this object to
+			// TODO: use the $this keyword to bind the values from this object to
 		//       the prepared statement
-		// TODO: excute the statement and set the $id property of this object to
+
+		$statement = self::$connection->prepare('INSERT INTO national_parks (name, location, date_established, area_in_acres, description) VALUES (:name, :location, :date_established, :area_in_acres, :description)');
+
+		$statement->bindValue(':name', $this->name, PDO::PARAM_STR);
+
+		$statement->bindValue(':location', $this->location, PDO::PARAM_STR);
+
+		$statement->bindValue(':date_established', $this->dateEstablished, PDO::PARAM_STR);
+
+		$statement->bindValue(':area_in_acres', $this->areaInAcres, PDO::PARAM_INT);
+
+		$statement->bindValue(':description', $this->description, PDO::PARAM_STR);
+
+		$statement->execute();
+		
+		// TODO: execute the statement and set the $id property of this object to
 		//       the newly created id
+
+		$this->id = self::$connection->lastInsertId();
 	}
 }
