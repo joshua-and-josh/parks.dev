@@ -2,6 +2,8 @@
 
 // connect to db, present db connection as $connection variable
 
+// Hello
+
 require __DIR__ . '/../db_connect.php';
 require __DIR__ . '/../Input.php';
 
@@ -104,7 +106,7 @@ extract(pageController($connection));
 	</head>
 	<body>
 		<main>
-			<h1>Welcome to (some of) the National Parks</h1>
+			<h1>National Parks</h1>
 			<table class="table table-bordered">
 				<thead class="thead-inverse">
 				<tr>
