@@ -39,25 +39,32 @@ class Park
     /**
      * our connection to the database
      */
-    public static $dbc = null;
+
+    public static $connection = null;
+
 
     /**
      * establish a database connection if we do not have one
      */
     public static function dbConnect() {
-        if (! is_null(self::$dbc)) {
+
+        if (! is_null(self::$connection)) {
             return;
         }
-        self::$dbc = require 'dbc.php';
+       self::$connection = require 'db_connect.php';
     }
 
     /**
      * returns the number of records in the database
      */
     public static function count() {
-        // TODO: call dbConnect to ensure we have a database connection
-        // TODO: use the $dbc static property to query the database for the
+        // TODO: call db_connect to ensure we have a database connection
+        self::dbConnect();
+        // TODO: use the $connection static property to query the database for the
         //       number of existing park records
+        $statement = self::$connection->query('SELECT count(*) FROM national_parks');
+        $count = $statement->fetchColumn();
+        return $count;
     }
 
     /**
@@ -65,11 +72,19 @@ class Park
      */
     public static function all() {
         // TODO: call dbConnect to ensure we have a database connection
-        // TODO: use the $dbc static property to query the database for all the
+
+
+        dbConnect();
+        // TODO: use the $connection static property to query the database for all the
         //       records in the parks table
+
         // TODO: iterate over the results array and transform each associative
         //       array into a Park object
+        foreach ($variable as $key => $value) {
+            # code...
+        }
         // TODO: return an array of Park objects
+
     }
 
     /**
@@ -79,7 +94,8 @@ class Park
         // TODO: call dbConnect to ensure we have a database connection
         // TODO: calculate the limit and offset needed based on the passed
         //       values
-        // TODO: use the $dbc static property to query the database with the
+        // TODO: use the $connection static property to query the database with the
+
         //       calculated limit and offset
         // TODO: return an array of the found Park objects
     }
@@ -103,7 +119,7 @@ class Park
      */
     public function insert() {
         // TODO: call dbConnect to ensure we have a database connection
-        // TODO: use the $dbc static property to create a perpared statement for
+        // TODO: use the $connection static property to create a perpared statement for
         //       inserting a record into the parks table
         // TODO: use the $this keyword to bind the values from this object to
         //       the prepared statement
