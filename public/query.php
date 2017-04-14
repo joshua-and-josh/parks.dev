@@ -1,10 +1,7 @@
 <?php
 
 // connect to db, present db connection as $connection variable
-
-// 
 require __DIR__ . '/../Park.php';
-// require __DIR__ . '/../db_connect.php';
 require __DIR__ . '/../Input.php';
 
 
@@ -16,23 +13,6 @@ function getLastPage($connection, $resultsPerPage) {
 
 	return $lastPage;
 }
-
-// function getPaginatedParks($page, $resultsPerPage) {
-
-// 	// $offset = ($page - 1) * $resultsPerPage;
-
-// 	// $statement = $connection->prepare("SELECT * FROM national_parks LIMIT  :resultsPerPage OFFSET :offset");
-
-// 	// $statement->bindValue('resultsPerPage', $resultsPerPage, PDO::PARAM_INT);
-
-// 	// $statement->bindValue('offset', $offset, PDO::PARAM_INT);
-
-// 	// $statement->execute();
-
-// 	// return $parks = $statement->fetchAll(PDO::FETCH_ASSOC);
-
-
-// }
 
 function handleOutOfRangeRequests ($page, $lastPage) {
 
