@@ -2,39 +2,37 @@
 
 // connect to db, present db connection as $connection variable
 
-// Hello
-
-require __DIR__ . '/../db_connect.php';
+// 
+require __DIR__ . '/../Park.php';
+// require __DIR__ . '/../db_connect.php';
 require __DIR__ . '/../Input.php';
 
 
-function getLastPage($connection, $items_per_page) {
+function getLastPage($connection, $resultsPerPage) {
 
-	$statement = $connection->query('SELECT count(*) FROM national_parks');
+	$count = Park::count();
 
-	$count = $statement->fetch()[0];
-
-	$lastPage = ceil($count/$items_per_page);
+	$lastPage = ceil($count/$resultsPerPage);
 
 	return $lastPage;
 }
 
-function getPaginatedParks($connection, $page, $items_per_page) {
+// function getPaginatedParks($page, $resultsPerPage) {
 
-	$offset = ($page - 1) * $items_per_page;
+// 	// $offset = ($page - 1) * $resultsPerPage;
 
-	$statement = $connection->prepare("SELECT * FROM national_parks LIMIT  :items_per_page OFFSET :offset");
+// 	// $statement = $connection->prepare("SELECT * FROM national_parks LIMIT  :resultsPerPage OFFSET :offset");
 
-	$statement->bindValue('items_per_page', $items_per_page, PDO::PARAM_INT);
+// 	// $statement->bindValue('resultsPerPage', $resultsPerPage, PDO::PARAM_INT);
 
-	$statement->bindValue('offset', $offset, PDO::PARAM_INT);
+// 	// $statement->bindValue('offset', $offset, PDO::PARAM_INT);
 
-	$statement->execute();
+// 	// $statement->execute();
 
-	return $parks = $statement->fetchAll(PDO::FETCH_ASSOC);
+// 	// return $parks = $statement->fetchAll(PDO::FETCH_ASSOC);
 
 
-}
+// }
 
 function handleOutOfRangeRequests ($page, $lastPage) {
 
@@ -58,33 +56,29 @@ function pageController($connection) {
 	$data = [];
 
 	// set the number of items to display per page
-	$items_per_page = 4;
+	$resultsPerPage = 4;
 
 	if(!empty($_POST)) {
 
-		$statement =  $connection->prepare('INSERT INTO national_parks (name, location, date_established, area_in_acres, description) VALUES (:name, :location, :date_established, :area_in_acres, :description)');
+		$park = new Park();
 
-		$statement->bindValue(':name', $_POST['name'], PDO::PARAM_STR);
+		$park->name = Input::get('name');
+		$park->location = Input::get('location');
+		$park->dateEstablished = Input::get('date_established');
+		$park->areaInAcres = Input::get('area_in_acres');
+		$park->description = Input::get('description');
 
-		$statement->bindValue(':location', $_POST['location'], PDO::PARAM_STR);
-
-		$statement->bindValue(':date_established', $_POST['date_established'], PDO::PARAM_STR);
-
-		$statement->bindValue(':area_in_acres', $_POST['area_in_acres'], PDO::PARAM_INT);
-
-		$statement->bindValue(':description', $_POST['description'], PDO::PARAM_STR);
-
-		$statement->execute();
+		$park->insert();
 
 	}
 
-	$page = Input::get('page',1);
+	$page = Input::get('page', 1);
 
-	$lastPage = getLastPage($connection, $items_per_page);
+	$lastPage = getLastPage($connection, $resultsPerPage);
 
 	handleOutOfRangeRequests($page, $lastPage);
 
-	$data['parks'] = getPaginatedParks($connection, $page, $items_per_page);
+	$data['parks'] = Park::paginate($page);
 	$data['page'] = $page;
 	$data['lastPage'] = $lastPage;
 
@@ -92,7 +86,7 @@ function pageController($connection) {
 
 }
 
-extract(pageController($connection));
+extract(pageController(Park::dbConnect())) ;
 
 ?>
 
@@ -128,7 +122,7 @@ extract(pageController($connection));
 				<?php endforeach; ?>
 				</table>
 			<div>
-				<form method="post" action="query.php">
+				<form method="POST" action="query.php">
 					<input type="text" name="name" class="form-control col-md-4" placeholder="Name"><br>
         			<input type="text" name="location" class="form-control col-md-4" placeholder="Location"><br>
        				<input type="text" name="date_established" class="form-control col-md-4" placeholder="Date Established YYYY-MM-DD"><br>

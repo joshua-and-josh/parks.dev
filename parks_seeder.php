@@ -45,7 +45,7 @@ foreach ($parks as $park) {
 
 	$statement->execute();
 
-	echo "Inserted ID: " . $connection->lastInsertId() . PHP_EOL;
+	echo "Inserted ID: " .  $connection->lastInsertId() . PHP_EOL;
 
 }
 
