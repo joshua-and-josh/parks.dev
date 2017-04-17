@@ -17,23 +17,6 @@ function getLastPage($connection, $resultsPerPage) {
 	return $lastPage;
 }
 
-// function getPaginatedParks($page, $resultsPerPage) {
-
-// 	// $offset = ($page - 1) * $resultsPerPage;
-
-// 	// $statement = $connection->prepare("SELECT * FROM national_parks LIMIT  :resultsPerPage OFFSET :offset");
-
-// 	// $statement->bindValue('resultsPerPage', $resultsPerPage, PDO::PARAM_INT);
-
-// 	// $statement->bindValue('offset', $offset, PDO::PARAM_INT);
-
-// 	// $statement->execute();
-
-// 	// return $parks = $statement->fetchAll(PDO::FETCH_ASSOC);
-
-
-// }
-
 function handleOutOfRangeRequests ($page, $lastPage) {
 
 	if($page < 1 || !is_numeric($page)) {
@@ -54,23 +37,50 @@ function handleOutOfRangeRequests ($page, $lastPage) {
 function pageController($connection) {
 
 	$data = [];
-
-	// set the number of items to display per page
-	$resultsPerPage = 4;
+	$data['errors'] = [];
 
 	if(!empty($_POST)) {
 
 		$park = new Park();
 
-		$park->name = Input::get('name');
-		$park->location = Input::get('location');
-		$park->dateEstablished = Input::get('date_established');
-		$park->areaInAcres = Input::get('area_in_acres');
-		$park->description = Input::get('description');
+		try {
+			$park->name = Input::getString('name');
+		} catch (Exception $e) {
+			$data['errors'][] = $e->getMessage();
+		}
 
-		$park->insert();
+		try {
+			$park->location = Input::getString('location');
+		} catch (Exception $e) {
+			$data['errors'][] = $e->getMessage();
+		}
+
+		try {
+			$park->dateEstablished = Input::getDate('date_established');
+		} catch (Exception $e) {
+			$data['errors'][] = $e->getMessage();
+		}
+
+		try {
+			$park->areaInAcres = Input::getNumber('area_in_acres');
+		} catch (Exception $e) {
+			$data['errors'][] = $e->getMessage();
+		}
+
+		try {
+			$park->description = Input::getString('description');
+		} catch (Exception $e) {
+			$data['errors'][] = $e->getMessage();
+		}
+
+		if (empty($data['errors'])) {
+			$park->insert();
+		}
 
 	}
+
+	// set the number of items to display per page
+	$resultsPerPage = 4;
 
 	$page = Input::get('page', 1);
 
@@ -101,6 +111,11 @@ extract(pageController(Park::dbConnect())) ;
 	<body>
 		<main>
 			<h1>National Parks</h1>
+			<ul>
+			<?php foreach($errors as $error) : ?>
+				<?= $error; ?> <br>
+			<?php endforeach; ?>
+			</ul>
 			<table class="table table-bordered">
 				<thead class="thead-inverse">
 				<tr>
