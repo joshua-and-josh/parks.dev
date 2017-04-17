@@ -157,7 +157,7 @@ class Park
 
 		$statement = self::$connection->prepare('INSERT INTO national_parks (name, location, date_established, area_in_acres, description) VALUES (:name, :location, :date_established, :area_in_acres, :description)');
 
-		$statement->bindValue(':name', $this->name, PDO::PARAM_STR);
+		$statement->bindValue(':name', PDO::PARAM_STR);
 
 		$statement->bindValue(':location', $this->location, PDO::PARAM_STR);
 
